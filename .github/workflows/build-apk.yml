@@ -18,23 +18,11 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Find and Grant Permission to Gradle
-        run: |
-          GRADLEW_PATH=$(find . -name "gradlew" -print -quit)
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "Error: gradlew file not found anywhere in the repository!"
-            exit 1
-          fi
-          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
-          echo "Found project directory at: $PROJECT_DIR"
-          chmod +x "$GRADLEW_PATH"
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
-          echo "GRADLEW_PATH=$GRADLEW_PATH" >> $GITHUB_ENV
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Build Debug APK
-        run: |
-          cd ${{ env.PROJECT_DIR }}
-          ./gradlew assembleDebug
+        run: gradle assembleDebug
 
       - name: Find and Upload APK
         uses: actions/upload-artifact@v4
