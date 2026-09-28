@@ -1,0 +1,6 @@
+{
+  "name": "Battle Clash",
+  "description": "Horizontal character duel game with customizable avatar uploads, dynamic score tracking, 1-50 random roll countdown, and victory celebrations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
