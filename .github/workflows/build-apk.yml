@@ -2,8 +2,8 @@ name: Build Android Kotlin APK
 
 on:
   push:
-    branches: [ main, master ] # Triggers automatically when you push code
-  workflow_dispatch: # Allows you to manually click "Run" anytime
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,14 +18,26 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Grant Execute Permission to Gradle
-        run: chmod +x gradlew
+      - name: Find and Grant Permission to Gradle
+        run: |
+          GRADLEW_PATH=$(find . -name "gradlew" -print -quit)
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "Error: gradlew file not found anywhere in the repository!"
+            exit 1
+          fi
+          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
+          echo "Found project directory at: $PROJECT_DIR"
+          chmod +x "$GRADLEW_PATH"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          echo "GRADLEW_PATH=$GRADLEW_PATH" >> $GITHUB_ENV
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          cd ${{ env.PROJECT_DIR }}
+          ./gradlew assembleDebug
 
-      - name: Upload APK to GitHub
+      - name: Find and Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: kotlin-app-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: "**/build/outputs/apk/debug/*-debug.apk"
